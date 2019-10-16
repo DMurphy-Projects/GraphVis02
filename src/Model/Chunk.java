@@ -12,6 +12,8 @@ public class Chunk {
 
     int x, y, size;
 
+    int dx, dy, dw, dh;
+
     boolean visible;
 
     public Chunk(int x, int y, int size)
@@ -32,6 +34,16 @@ public class Chunk {
     {
         nodes.remove(n);
         n.belongsTo(null);
+    }
+
+    public void draw(Graphics g, int x, int y, int w, int h)
+    {
+        this.dx = x;
+        this.dy = y;
+        this.dw = w;
+        this.dh = h;
+
+        g.drawRect(x, y, w, h);
     }
 
     public boolean isThisChunk(Point p)
@@ -62,5 +74,13 @@ public class Chunk {
 
     public boolean isVisible() {
         return visible;
+    }
+
+    public int getDrawX() {
+        return dx;
+    }
+
+    public int getDrawY() {
+        return dy;
     }
 }

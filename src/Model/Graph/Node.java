@@ -2,14 +2,18 @@ package Model.Graph;
 
 import Model.Chunk;
 
+import java.awt.*;
+
 public class Node {
 
     private static int ID = 0;
 
     private int id;
 
-    int x, y;
+    int x, y, dx, dy;
     float rX, rY;
+
+    int diam = 2, rad;
 
     Chunk belongsTo;
 
@@ -17,6 +21,8 @@ public class Node {
     {
         this.x = x;
         this.y = y;
+
+        rad = diam / 2;
 
         this.id = Node.ID++;
     }
@@ -46,6 +52,14 @@ public class Node {
         updateRelative();
     }
 
+    public void draw(Graphics g, int x, int y)
+    {
+        this.dx = x + belongsTo.getDrawX();
+        this.dy = y + belongsTo.getDrawY();
+
+        g.drawOval(dx - rad, dy - rad, diam, diam);
+    }
+
     public int getX() {
         return x;
     }
@@ -59,6 +73,14 @@ public class Node {
 
     public float getRelativeY() {
         return rY;
+    }
+
+    public int getDrawX() {
+        return dx;
+    }
+
+    public int getDrawY() {
+        return dy;
     }
 
     public int ID()

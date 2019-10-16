@@ -16,10 +16,15 @@ public class Graph {
 
     ChunkTranslate translate;
 
+    public int width;
+    public int height;
+
     public Graph(int width, int height, int chunkSize)
     {
         chunks = new Chunk[width][height];
         this.chunkSize = chunkSize;
+        this.width = width;
+        this.height = height;
 
         translate = new ChunkTranslate() {
             int x_t, y_t, x_s, y_s;

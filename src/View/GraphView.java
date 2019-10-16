@@ -7,17 +7,22 @@ import Model.Graph.Relationship;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
-public class GraphView extends JPanel {
+public class GraphView extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener{
 
     Graph model;
 
-    int size, xOff=0, yOff=0;
+    int size, xOff=0, yOff=0, prevX=0, prevY=0;
 
     public GraphView(Graph model)
     {
         this.model = model;
         size = model.getAllChunks().length;
+
+        this.addMouseMotionListener(this);
+        this.addMouseListener(this);
+        this.addMouseWheelListener(this);
     }
 
     @Override
@@ -32,6 +37,8 @@ public class GraphView extends JPanel {
         int chunkWidth = w / size;
         int chunkHeight = h / size;
 
+        boolean[][] loadMap = new boolean[model.width][model.height];
+        //find all chunks that are on screen
         for (Chunk[] strip: model.getAllChunks())
         {
             for (Chunk chunk: strip)
@@ -39,53 +46,62 @@ public class GraphView extends JPanel {
                 int chunkX = (chunk.getX()*chunkWidth) + xOff;
                 int chunkY = (chunk.getY()*chunkHeight) + yOff;
 
-                boolean notVisible = chunkX+chunkWidth <= 0 || chunkX >= w || chunkY+chunkHeight <= 0 || chunkY >= h;
-                chunk.setVisible(!notVisible);//ugh
-                if (notVisible)
-                {
-//                    System.out.println(chunk.getX()+" "+chunk.getY());
-                    continue;
-                }
+                boolean visible = chunkX+chunkWidth > 0 && chunkX < w && chunkY+chunkHeight > 0 && chunkY < h;
+                chunk.setVisible(visible);
 
-                g.drawRect(chunkX, chunkY, chunkWidth, chunkHeight);
+                //load if visible
+                loadMap[chunk.getX()][chunk.getY()] = visible;
+            }
+        }
+        //find chunks that need to be loaded due to relationships
+        for (Relationship r: model.getAllRelationships()) {
+            Node n1 = r.getN1();
+            Node n2 = r.getN2();
 
-                for (Node n:chunk.getNodes())
-                {
-                    float relX = n.getRelativeX() / chunk.getSize();
-                    float relY = n.getRelativeY() / chunk.getSize();
+            boolean n1Vis = n1.getBelongsTo().isVisible();
+            boolean n2Vis = n2.getBelongsTo().isVisible();
 
-                    g.drawOval((int)(relX * chunkWidth) + chunkX - 3, (int) (relY * chunkHeight) + chunkY - 3, 6, 6);
-                }
+            if (n1Vis && !n2Vis)
+            {
+                //need to load n2
+                loadMap[n2.getBelongsTo().getX()][n2.getBelongsTo().getY()] = true;
+            }
+            else if (!n1Vis && n2Vis)
+            {
+                //need to load n1
+                loadMap[n1.getBelongsTo().getX()][n1.getBelongsTo().getY()] = true;
             }
         }
 
-        //turns out relationships are harder to render this way
+        //draw loaded chunks
+        for (Chunk[] strip: model.getAllChunks())
+        {
+            for (Chunk chunk: strip)
+            {
+                if (loadMap[chunk.getX()][chunk.getY()]) {
+                    int chunkX = (chunk.getX() * chunkWidth) + xOff;
+                    int chunkY = (chunk.getY() * chunkHeight) + yOff;
+
+                    chunk.draw(g, chunkX, chunkY, chunkWidth, chunkHeight);
+
+                    for (Node n : chunk.getNodes()) {
+                        float relX = n.getRelativeX() / chunk.getSize();
+                        float relY = n.getRelativeY() / chunk.getSize();
+
+                        n.draw(g, (int) (relX * chunkWidth), (int) (relY * chunkHeight));
+                    }
+                }
+            }
+        }
+        //draw loaded relationships
         for (Relationship r: model.getAllRelationships())
         {
-            if (r.getN1().getBelongsTo().isVisible() || r.getN2().getBelongsTo().isVisible())
+            Node n1 = r.getN1();
+            Node n2 = r.getN2();
+
+            if (n1.getBelongsTo().isVisible() || n2.getBelongsTo().isVisible())
             {
-                Chunk c1 = r.getN1().getBelongsTo();
-                Chunk c2 = r.getN2().getBelongsTo();
-
-                int c1X = (c1.getX()*chunkWidth) + xOff;
-                int c1Y = (c1.getY()*chunkHeight) + yOff;
-
-                int c2X = (c2.getX()*chunkWidth) + xOff;
-                int c2Y = (c2.getY()*chunkHeight) + yOff;
-
-                float rel1X = r.getN1().getRelativeX() / c1.getSize();
-                float rel1Y = r.getN1().getRelativeY() / c1.getSize();
-
-                float rel2X = r.getN2().getRelativeX() / c2.getSize();
-                float rel2Y = r.getN2().getRelativeY() / c2.getSize();
-
-                g.drawLine(
-                        (int)(rel1X * chunkWidth) + c1X,
-                        (int)(rel1Y * chunkWidth) + c1Y,
-                        (int)(rel2X * chunkWidth) + c2X,
-                        (int)(rel2Y * chunkWidth) + c2Y
-                );
-
+                g.drawLine(n1.getDrawX(), n1.getDrawY(), n2.getDrawX(), n2.getDrawY());
             }
         }
     }
@@ -93,5 +109,64 @@ public class GraphView extends JPanel {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(500, 500);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+        this.xOff += e.getXOnScreen() - prevX;
+        this.yOff += e.getYOnScreen() - prevY;
+
+        this.prevX = e.getXOnScreen();
+        this.prevY = e.getYOnScreen();
+
+        this.repaint();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        this.prevX = e.getXOnScreen();
+        this.prevY = e.getYOnScreen();
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        int d = e.getWheelRotation();
+
+        if (d > 0)
+        {
+            size = Math.max(1, size - 1);
+        }
+        else if (d < 0)
+        {
+            size = Math.min(10, size + 1);
+        }
+
+        this.repaint();
     }
 }
