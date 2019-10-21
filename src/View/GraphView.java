@@ -9,16 +9,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class GraphView extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener{
+public class GraphView extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener, KeyListener{
 
     Graph model;
 
-    int size, xOff=0, yOff=0, prevX=0, prevY=0;
+    int size, xOff=0, yOff=0, prevX=0, prevY=0, sizeMax;
 
     public GraphView(Graph model)
     {
         this.model = model;
-        size = model.getAllChunks().length;
+        sizeMax = model.getAllChunks().length;;
+        size = Math.min(5, sizeMax);
 
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
@@ -32,10 +33,12 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
 
         g.setColor(Color.black);
 
-        int w = getWidth(), h = getHeight();
+        double w = getWidth(), h = getHeight();
 
-        int chunkWidth = w / size;
-        int chunkHeight = h / size;
+        double chunkWidth = w / size;
+        double chunkHeight = h / size;
+
+        int chunkOffX = -sizeMax/2, chunkOffY = -sizeMax/2;
 
         boolean[][] loadMap = new boolean[model.width][model.height];
         //find all chunks that are on screen
@@ -43,8 +46,8 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
         {
             for (Chunk chunk: strip)
             {
-                int chunkX = (chunk.getX()*chunkWidth) + xOff;
-                int chunkY = (chunk.getY()*chunkHeight) + yOff;
+                double chunkX = (chunk.getX(chunkOffX)*chunkWidth) + xOff;
+                double chunkY = (chunk.getY(chunkOffY)*chunkHeight) + yOff;
 
                 boolean visible = chunkX+chunkWidth > 0 && chunkX < w && chunkY+chunkHeight > 0 && chunkY < h;
                 chunk.setVisible(visible);
@@ -79,10 +82,10 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
             for (Chunk chunk: strip)
             {
                 if (loadMap[chunk.getX()][chunk.getY()]) {
-                    int chunkX = (chunk.getX() * chunkWidth) + xOff;
-                    int chunkY = (chunk.getY() * chunkHeight) + yOff;
+                    int chunkX = (int)(chunk.getX(chunkOffX) * chunkWidth) + xOff;
+                    int chunkY = (int)(chunk.getY(chunkOffY) * chunkHeight) + yOff;
 
-                    chunk.draw(g, chunkX, chunkY, chunkWidth, chunkHeight);
+                    chunk.draw(g, chunkX, chunkY, (int)chunkWidth, (int)chunkHeight);
 
                     for (Node n : chunk.getNodes()) {
                         float relX = n.getRelativeX() / chunk.getSize();
@@ -154,19 +157,53 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
 
     }
 
+    private void zoomIn()
+    {
+        size = Math.max(1, size - 1);
+    }
+
+    private void zoomOut()
+    {
+        size = Math.min(sizeMax, size + 1);
+    }
+
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int d = e.getWheelRotation();
 
         if (d > 0)
         {
-            size = Math.max(1, size - 1);
+            zoomIn();
         }
         else if (d < 0)
         {
-            size = Math.min(10, size + 1);
+            zoomOut();
         }
 
         this.repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        if (e.getKeyChar() == '=')//where the + is
+        {
+            zoomIn();
+        }
+        else if (e.getKeyChar() == '-')
+        {
+            zoomOut();
+        }
+
+        this.repaint();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

@@ -32,6 +32,7 @@ public class MainApplication {
 
         GraphView view = new GraphView(graph);
 
+        frame.addKeyListener(view);
         frame.add(view);
         frame.pack();
 

@@ -54,7 +54,14 @@ public class Chunk {
     public int getX() {
         return x;
     }
+    public int getX(int off) {
+        return getX() + off;
+    }
 
+
+    public int getY(int off) {
+        return getY() + off;
+    }
     public int getY() {
         return y;
     }
