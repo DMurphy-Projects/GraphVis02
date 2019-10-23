@@ -3,7 +3,6 @@ package Model.Graph;
 import Model.Chunk;
 import Model.ChunkTranslate;
 
-import javax.management.relation.Relation;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -97,5 +96,10 @@ public class Graph {
 
     public ArrayList<Relationship> getAllRelationships() {
         return relationships;
+    }
+
+    public Dimension getGraphDimension()
+    {
+        return new Dimension(width * chunkSize, height * chunkSize);
     }
 }

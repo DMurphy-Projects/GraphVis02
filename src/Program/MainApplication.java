@@ -4,6 +4,8 @@ import Model.Graph.Graph;
 import Model.Graph.Node;
 import Model.Graph.Relationship;
 import View.GraphView;
+import View.GraphView02;
+import View.GraphViewController;
 
 import javax.swing.*;
 
@@ -30,12 +32,18 @@ public class MainApplication {
         JFrame frame = new JFrame("Main");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        GraphView view = new GraphView(graph);
+        GraphViewController viewController = new GraphViewController(graph);
+        GraphView02 view = new GraphView02(viewController);
 
-        frame.addKeyListener(view);
         frame.add(view);
         frame.pack();
 
+        frame.addMouseListener(view);
+        frame.addMouseMotionListener(view);
+        frame.addKeyListener(view);
+
         frame.setVisible(true);
+
+        view.update();
     }
 }
