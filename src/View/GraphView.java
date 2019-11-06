@@ -4,6 +4,7 @@ import Model.Chunk;
 import Model.Graph.Graph;
 import Model.Graph.Node;
 import Model.Graph.Relationship;
+import Model.Graph.ViewNode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,7 +88,9 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
 
                     chunk.draw(g, chunkX, chunkY, (int)chunkWidth, (int)chunkHeight);
 
-                    for (Node n : chunk.getNodes()) {
+                    for (Node _n : chunk.getNodes()) {
+                        ViewNode n = (ViewNode)_n;
+
                         float relX = n.getRelativeX() / chunk.getSize();
                         float relY = n.getRelativeY() / chunk.getSize();
 
@@ -99,8 +102,8 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
         //draw loaded relationships
         for (Relationship r: model.getAllRelationships())
         {
-            Node n1 = r.getN1();
-            Node n2 = r.getN2();
+            ViewNode n1 = (ViewNode) r.getN1();
+            ViewNode n2 = (ViewNode) r.getN2();
 
             if (n1.getBelongsTo().isVisible() || n2.getBelongsTo().isVisible())
             {

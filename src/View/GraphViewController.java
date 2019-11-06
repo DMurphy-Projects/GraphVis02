@@ -8,6 +8,7 @@ import Model.Graph.Relationship;
 import java.awt.*;
 import java.util.ArrayList;
 
+//is this just a controller at this point? not only used for view
 public class GraphViewController {
 
     double xPos = 0, yPos = 0, zoom = 1, screenSize, defaultScreenSize = 100, globalOffX, globalOffY;
@@ -134,8 +135,8 @@ public class GraphViewController {
 
         updateRelationshipList();
 
-        System.out.println("Loaded Chunks: "+loadedChunks.size());
-        System.out.println("Loaded Relations: "+loadedRelationships.size()+"\n");
+//        System.out.println("Loaded Chunks: "+loadedChunks.size());
+//        System.out.println("Loaded Relations: "+loadedRelationships.size()+"\n");
     }
 
     public double[] transform(double x, double y)
@@ -161,10 +162,10 @@ public class GraphViewController {
     }
 
     public ArrayList<Chunk> getLoadedChunks() {
-        return loadedChunks;
+        return (ArrayList<Chunk>) loadedChunks.clone();
     }
 
     public ArrayList<Relationship> getLoadedRelationships() {
-        return loadedRelationships;
+        return (ArrayList<Relationship>) loadedRelationships.clone();
     }
 }

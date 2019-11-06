@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Chunk {
 
-    List<Node> nodes = new ArrayList<>();
+    ArrayList<Node> nodes = new ArrayList<>();
 
     int x, y, size;
 
@@ -71,7 +71,7 @@ public class Chunk {
     }
 
     public List<Node> getNodes() {
-        return nodes;
+        return (List<Node>) nodes.clone();
     }
 
     public void setVisible(boolean b)

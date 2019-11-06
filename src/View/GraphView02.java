@@ -3,6 +3,7 @@ package View;
 import Model.Chunk;
 import Model.Graph.Node;
 import Model.Graph.Relationship;
+import Model.Graph.ViewNode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,8 +23,6 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
     public void update()
     {
-        controller.update();
-
         this.repaint();
     }
 
@@ -56,7 +55,10 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
             c.draw(g, x, y, _w, _h);
 
-            for (Node n : c.getNodes()) {
+            for (Node _n : c.getNodes()) {
+
+                ViewNode n = (ViewNode)_n;
+
                 float relX = n.getRelativeX() / c.getSize();
                 float relY = n.getRelativeY() / c.getSize();
 
@@ -67,8 +69,8 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
         //draw loaded relationships
         for (Relationship r: controller.getLoadedRelationships())
         {
-            Node n1 = r.getN1();
-            Node n2 = r.getN2();
+            ViewNode n1 = (ViewNode) r.getN1();
+            ViewNode n2 = (ViewNode) r.getN2();
 
             g.drawLine(n1.getDrawX(), n1.getDrawY(), n2.getDrawX(), n2.getDrawY());
         }

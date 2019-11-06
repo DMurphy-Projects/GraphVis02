@@ -37,15 +37,15 @@ public class Graph {
             }
 
             @Override
-            public Point translate(int x, int y) {
-                double newX = (double)(x + x_t) / x_s;
-                double newY = (double)(y + y_t) / y_s;
+            public Point translate(double x, double y) {
+                double newX = (x + x_t) / x_s;
+                double newY = (y + y_t) / y_s;
 
                 newX = Math.max(newX, 0);
                 newY = Math.max(newY, 0);
 
-                newX = Math.min(newX, width);
-                newY = Math.min(newY, height);
+                newX = Math.min(newX, width-1);
+                newY = Math.min(newY, height-1);
 
                 return new Point((int)newX, (int) newY);
             }
@@ -67,6 +67,8 @@ public class Graph {
         Point chunkLoc = translate.translate(n.getX(), n.getY());
 
         Chunk chunk = chunks[chunkLoc.x][chunkLoc.y];
+
+        System.out.println(chunkLoc);
 
         chunk.addNode(n);
     }
