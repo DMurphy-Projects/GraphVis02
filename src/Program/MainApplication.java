@@ -15,23 +15,37 @@ public class MainApplication {
     public static void main(String[] args) throws InterruptedException {
         Graph graph = new Graph(5, 5, 8);
 
-        Node n1 = new ForceNode(1, 1);
-        Node n2 = new ForceNode(12, 12);
-        Node n3 = new ForceNode(1, 12);
+//        Node n1 = new ForceNode(-1, -1);
+//        Node n2 = new ForceNode(12, 12);
+//        Node n3 = new ForceNode(1, 12);
+//
+//        graph.putNode(n1);
+//        graph.putNode(n2);
+//        graph.putNode(n3);
+//
+//        graph.putRelationship(new Relationship(n1, n2));
+//        graph.putRelationship(new Relationship(n1, n3));
+//        graph.putRelationship(new Relationship(n2, n3));
 
-        graph.putNode(n1);
-        graph.putNode(n2);
-        graph.putNode(n3);
+        int w = 10, h =10;
+        Node[][] grid = new Node[w][h];
+        for (int i=0;i<w;i++)
+        {
+            for (int ii=0;ii<h;ii++)
+            {
+                grid[i][ii] = new ForceNode(i, ii);
+                graph.putNode(grid[i][ii]);
 
-        graph.putRelationship(new Relationship(n1, n2));
-        graph.putRelationship(new Relationship(n1, n3));
-        graph.putRelationship(new Relationship(n2, n3));
-
-//        for (int i=0;i<10;i++)
-//        {
-//            n.move(1, 0);
-//            graph.updateNode(n);
-//        }
+                if (i>0)
+                {
+                    graph.putRelationship(new Relationship(grid[i][ii], grid[i-1][ii]));
+                }
+                if (ii>0)
+                {
+                    graph.putRelationship(new Relationship(grid[i][ii], grid[i][ii-1]));
+                }
+            }
+        }
 
         JFrame frame = new JFrame("Main");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,7 +63,7 @@ public class MainApplication {
         frame.setVisible(true);
 
         ForceController fCon = new ForceController(viewController, graph);
-        fCon.addRoutine(new RelationshipRoutine(viewController, new SpringForce(5)));
+        fCon.addRoutine(new RelationshipRoutine(viewController, new SpringForce(2)));
 
         while (true) {
             viewController.update();

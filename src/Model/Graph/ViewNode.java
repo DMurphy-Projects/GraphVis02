@@ -38,6 +38,15 @@ public class ViewNode extends Node {
             int size = belongsTo.getSize();
             rX = (float) (this.x % size);
             rY = (float) (this.y % size);
+
+            if (rX < 0)
+            {
+                rX += size;
+            }
+            if (rY < 0)
+            {
+                rY += size;
+            }
         }
     }
 
