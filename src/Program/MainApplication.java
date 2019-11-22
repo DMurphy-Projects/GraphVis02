@@ -9,13 +9,14 @@ import View.GraphView02;
 import View.GraphViewController;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class MainApplication {
 
     public static void main(String[] args) throws InterruptedException {
         Graph graph = new Graph(5, 5, 8);
 
-//        Node n1 = new ForceNode(-1, -1);
+//        Node n1 = new ForceNode(-1, 1);
 //        Node n2 = new ForceNode(12, 12);
 //        Node n3 = new ForceNode(1, 12);
 //

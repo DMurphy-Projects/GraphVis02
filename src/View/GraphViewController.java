@@ -7,6 +7,7 @@ import Model.Graph.Relationship;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 //is this just a controller at this point? not only used for view
 public class GraphViewController {
@@ -16,7 +17,7 @@ public class GraphViewController {
     Graph graph;
 
     int loadMapWidth, loadMapHeight;
-    boolean[][] loadMap;
+    HashMap<String, Boolean> loadMap;
 
     ArrayList<Chunk> loadedChunks = new ArrayList<>();
     ArrayList<Relationship> loadedRelationships = new ArrayList<>();
@@ -27,7 +28,7 @@ public class GraphViewController {
 
         loadMapWidth = g.width;
         loadMapHeight = g.height;
-        loadMap = new boolean[loadMapWidth][loadMapHeight];
+        loadMap = new HashMap<>();
     }
 
     private void updateScreenSize()
@@ -51,16 +52,13 @@ public class GraphViewController {
 
     private void loadSimple()
     {
-        for (Chunk[] strip: graph.getAllChunks())
+        for (Chunk c: graph.getAllChunks())
         {
-            for (Chunk c: strip)
-            {
-                int x = c.getX();
-                int y = c.getY();
-                int size = c.getSize();
+            int x = c.getRelativeX();
+            int y = c.getRelativeY();
+            int size = c.getSize();
 
-                loadMap[x][y] = isInsideScreen((x * size) + xPos + globalOffX, (y * size) + yPos + globalOffY, size, size);
-            }
+            loadMap.put(c.getID(), isInsideScreen((x * size) + xPos + globalOffX, (y * size) + yPos + globalOffY, size, size));
         }
     }
 
@@ -73,18 +71,18 @@ public class GraphViewController {
             Chunk c1 = n1.getBelongsTo();
             Chunk c2 = n2.getBelongsTo();
 
-            boolean n1Vis = loadMap[c1.getX()][c1.getY()];
-            boolean n2Vis = loadMap[c2.getX()][c2.getY()];
+            boolean n1Vis = loadMap.get(c1.getID());
+            boolean n2Vis = loadMap.get(c2.getID());
 
             if (n1Vis && !n2Vis)
             {
                 //need to load n2
-                loadMap[c2.getX()][c2.getY()] = true;
+                loadMap.put(c2.getID(), true);
             }
             else if (!n1Vis && n2Vis)
             {
                 //need to load n1
-                loadMap[c1.getX()][c1.getY()] = true;
+                loadMap.put(c1.getID(), true);
             }
         }
     }
@@ -98,14 +96,12 @@ public class GraphViewController {
     private void updateChunkList()
     {
         loadedChunks.clear();
-        for (Chunk[] strip: graph.getAllChunks()) {
-            for (Chunk c : strip) {
-                boolean loaded = loadMap[c.getX()][c.getY()];
-                c.setVisible(loaded);
-                if (loaded)
-                {
-                    loadedChunks.add(c);
-                }
+        for (Chunk c: graph.getAllChunks()) {
+            boolean loaded = loadMap.get(c.getID());
+            c.setVisible(loaded);
+            if (loaded)
+            {
+                loadedChunks.add(c);
             }
         }
     }
@@ -158,7 +154,7 @@ public class GraphViewController {
 
     public void zoom(double z)
     {
-        zoom += z;
+        zoom *= z;
     }
 
     public ArrayList<Chunk> getLoadedChunks() {

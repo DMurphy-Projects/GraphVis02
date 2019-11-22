@@ -1,26 +1,34 @@
 package Model;
 
 import Model.Graph.Node;
+import Model.Graph.ViewNode;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Chunk {
+public class Chunk{
+
+    private String id;
 
     ArrayList<Node> nodes = new ArrayList<>();
 
-    int x, y, size;
+    int rX, rY, size, x, y;
 
     int dx, dy, dw, dh;
 
     boolean visible;
 
-    public Chunk(int x, int y, int size)
+    public Chunk(int x, int y, int size, String id)
     {
-        this.x = x;
-        this.y = y;
+        this.rX = x;
+        this.rY = y;
         this.size = size;
+
+        this.x = rX * this.size;
+        this.y = rY * this.size;
+
+        this.id = id;
     }
 
     public void addNode(Node n)
@@ -46,24 +54,35 @@ public class Chunk {
         g.drawRect(x, y, w, h);
     }
 
-    public boolean isThisChunk(Point p)
+    public boolean isThisChunk(Chunk c)
     {
-        return p.x == x && p.y == y;
+        return this.id == c.id;
     }
 
-    public int getX() {
-        return x;
+    public boolean isInsideChunk(Node n)
+    {
+        boolean left = n.getX() >= this.x;
+        boolean upper = n.getY() >= this.y;
+
+        boolean right = n.getX() < this.x + this.size;
+        boolean lower = n.getY() < this.y + this.size;
+
+        return left && right && upper && lower;
     }
-    public int getX(int off) {
-        return getX() + off;
+
+    public int getRelativeX() {
+        return rX;
+    }
+    public int getRelativeX(int off) {
+        return getRelativeX() + off;
     }
 
 
-    public int getY(int off) {
-        return getY() + off;
+    public int getRelativeY() {
+        return rY;
     }
-    public int getY() {
-        return y;
+    public int getRelativeY(int off) {
+        return getRelativeY() + off;
     }
 
     public int getSize() {
@@ -89,5 +108,13 @@ public class Chunk {
 
     public int getDrawY() {
         return dy;
+    }
+
+    public String getID() {
+        return id;
+    }
+    public boolean isId(String s)
+    {
+        return s.equals(id);
     }
 }

@@ -45,8 +45,8 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
         {
             double size = c.getSize();
 
-            double[] point = controller.transform(c.getX() * size, c.getY() * size);
-            double[] dim = controller.transform(c.getX(1) * size, c.getY(1) * size);
+            double[] point = controller.transform(c.getRelativeX() * size, c.getRelativeY() * size);
+            double[] dim = controller.transform(c.getRelativeX(1) * size, c.getRelativeY(1) * size);
 
             int x = (int)(point[0]*w);
             int y = (int)(point[1]*h);
@@ -124,12 +124,12 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
     public void keyTyped(KeyEvent e) {
         if (e.getKeyChar() == '=')//where the + is
         {
-            controller.zoom(0.25);
+            controller.zoom(0.75);
             update();
         }
         else if (e.getKeyChar() == '-')
         {
-            controller.zoom(-0.25);
+            controller.zoom(1.33);
             update();
         }
     }

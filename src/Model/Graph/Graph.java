@@ -10,17 +10,16 @@ public class Graph {
 
     ArrayList<Relationship> relationships = new ArrayList<>();
 
-    Chunk[][] chunks;
+    ArrayList<Chunk> chunks;
     int chunkSize;
 
     ChunkTranslate translate;
-
     public int width;
     public int height;
 
     public Graph(int width, int height, int chunkSize)
     {
-        chunks = new Chunk[width][height];
+        chunks = new ArrayList<>();
         this.chunkSize = chunkSize;
         this.width = width;
         this.height = height;
@@ -41,36 +40,49 @@ public class Graph {
                 double newX = (x + x_t) / x_s;
                 double newY = (y + y_t) / y_s;
 
-                newX = Math.max(newX, 0);
-                newY = Math.max(newY, 0);
-
-                newX = Math.min(newX, width-1);
-                newY = Math.min(newY, height-1);
+                newX = Math.floor(newX);
+                newY = Math.floor(newY);
 
                 return new Point((int)newX, (int) newY);
             }
         };
-        translate.setup(chunkSize*(width/2), chunkSize*(height/2), chunkSize, chunkSize);
-
+        translate.setup(0, 0, chunkSize, chunkSize);
         //init chunks
         for (int i=0;i<width;i++)
         {
             for (int ii=0;ii<height;ii++)
             {
-                chunks[i][ii] = new Chunk(i, ii, chunkSize);
+                Point pos = translate.translate(i*chunkSize, ii*chunkSize);
+                chunks.add(new Chunk(i, ii, chunkSize, pos.x+":"+pos.y));
             }
         }
     }
 
     public void putNode(Node n)
     {
-        Point chunkLoc = translate.translate(n.getX(), n.getY());
+        Point pos = translate.translate(n.getX(), n.getY());
+        String posId = pos.x+":"+pos.y;
 
-        Chunk chunk = chunks[chunkLoc.x][chunkLoc.y];
+        boolean found = false;
+        for (Chunk c: chunks)
+        {
+            if (c.isId(posId))
+            {
+                found = true;
 
-        System.out.println(chunkLoc);
+                c.addNode(n);
+            }
+        }
 
-        chunk.addNode(n);
+        if (!found)
+        {
+            System.out.println("Adding Chunk");
+
+            Chunk newChunk = new Chunk(pos.x, pos.y, chunkSize, posId);
+            chunks.add(newChunk);
+
+            newChunk.addNode(n);
+        }
     }
 
     public void putRelationship(Relationship r)
@@ -82,17 +94,17 @@ public class Graph {
     {
         Chunk belongs = n.getBelongsTo();
 
-        Point chunkLoc = translate.translate(n.getX(), n.getY());
-
-        if (!belongs.isThisChunk(chunkLoc))
+        if (!belongs.isInsideChunk(n))
         {
+            System.out.println("Remove " + belongs.getID());
+
             belongs.removeNode(n);
 
             putNode(n);
         }
     }
 
-    public Chunk[][] getAllChunks() {
+    public ArrayList<Chunk> getAllChunks() {
         return chunks;
     }
 

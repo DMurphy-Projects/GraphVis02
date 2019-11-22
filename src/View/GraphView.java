@@ -19,7 +19,7 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
     public GraphView(Graph model)
     {
         this.model = model;
-        sizeMax = model.getAllChunks().length;;
+        sizeMax = model.getAllChunks().size();;
         size = Math.min(5, sizeMax);
 
         this.addMouseMotionListener(this);
@@ -43,19 +43,16 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
 
         boolean[][] loadMap = new boolean[model.width][model.height];
         //find all chunks that are on screen
-        for (Chunk[] strip: model.getAllChunks())
+        for (Chunk chunk: model.getAllChunks())
         {
-            for (Chunk chunk: strip)
-            {
-                double chunkX = (chunk.getX(chunkOffX)*chunkWidth) + xOff;
-                double chunkY = (chunk.getY(chunkOffY)*chunkHeight) + yOff;
+            double chunkX = (chunk.getRelativeX(chunkOffX)*chunkWidth) + xOff;
+            double chunkY = (chunk.getRelativeY(chunkOffY)*chunkHeight) + yOff;
 
-                boolean visible = chunkX+chunkWidth > 0 && chunkX < w && chunkY+chunkHeight > 0 && chunkY < h;
-                chunk.setVisible(visible);
+            boolean visible = chunkX+chunkWidth > 0 && chunkX < w && chunkY+chunkHeight > 0 && chunkY < h;
+            chunk.setVisible(visible);
 
-                //load if visible
-                loadMap[chunk.getX()][chunk.getY()] = visible;
-            }
+            //load if visible
+            loadMap[chunk.getRelativeX()][chunk.getRelativeY()] = visible;
         }
         //find chunks that need to be loaded due to relationships
         for (Relationship r: model.getAllRelationships()) {
@@ -68,34 +65,31 @@ public class GraphView extends JPanel implements MouseMotionListener, MouseListe
             if (n1Vis && !n2Vis)
             {
                 //need to load n2
-                loadMap[n2.getBelongsTo().getX()][n2.getBelongsTo().getY()] = true;
+                loadMap[n2.getBelongsTo().getRelativeX()][n2.getBelongsTo().getRelativeY()] = true;
             }
             else if (!n1Vis && n2Vis)
             {
                 //need to load n1
-                loadMap[n1.getBelongsTo().getX()][n1.getBelongsTo().getY()] = true;
+                loadMap[n1.getBelongsTo().getRelativeX()][n1.getBelongsTo().getRelativeY()] = true;
             }
         }
 
         //draw loaded chunks
-        for (Chunk[] strip: model.getAllChunks())
+        for (Chunk chunk: model.getAllChunks())
         {
-            for (Chunk chunk: strip)
-            {
-                if (loadMap[chunk.getX()][chunk.getY()]) {
-                    int chunkX = (int)(chunk.getX(chunkOffX) * chunkWidth) + xOff;
-                    int chunkY = (int)(chunk.getY(chunkOffY) * chunkHeight) + yOff;
+            if (loadMap[chunk.getRelativeX()][chunk.getRelativeY()]) {
+                int chunkX = (int)(chunk.getRelativeX(chunkOffX) * chunkWidth) + xOff;
+                int chunkY = (int)(chunk.getRelativeY(chunkOffY) * chunkHeight) + yOff;
 
-                    chunk.draw(g, chunkX, chunkY, (int)chunkWidth, (int)chunkHeight);
+                chunk.draw(g, chunkX, chunkY, (int)chunkWidth, (int)chunkHeight);
 
-                    for (Node _n : chunk.getNodes()) {
-                        ViewNode n = (ViewNode)_n;
+                for (Node _n : chunk.getNodes()) {
+                    ViewNode n = (ViewNode)_n;
 
-                        float relX = n.getRelativeX() / chunk.getSize();
-                        float relY = n.getRelativeY() / chunk.getSize();
+                    float relX = n.getRelativeX() / chunk.getSize();
+                    float relY = n.getRelativeY() / chunk.getSize();
 
-                        n.draw(g, (int) (relX * chunkWidth), (int) (relY * chunkHeight));
-                    }
+                    n.draw(g, (int) (relX * chunkWidth), (int) (relY * chunkHeight));
                 }
             }
         }
