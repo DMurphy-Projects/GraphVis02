@@ -8,7 +8,7 @@ public class Node {
 
     private int id;
 
-    double x, y;
+    protected double x, y;
 
     Chunk belongsTo;
 

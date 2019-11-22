@@ -54,11 +54,11 @@ public class GraphViewController {
     {
         for (Chunk c: graph.getAllChunks())
         {
-            int x = c.getRelativeX();
-            int y = c.getRelativeY();
+            int x = (int) c.getRelativeX();
+            int y = (int) c.getRelativeY();
             int size = c.getSize();
 
-            loadMap.put(c.getID(), isInsideScreen((x * size) + xPos + globalOffX, (y * size) + yPos + globalOffY, size, size));
+            loadMap.put(c.getID(), isInsideScreen(x + xPos + globalOffX, y + yPos + globalOffY, size, size));
         }
     }
 

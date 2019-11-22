@@ -7,28 +7,26 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Chunk{
+public class Chunk extends ViewNode{
 
     private String id;
 
     ArrayList<Node> nodes = new ArrayList<>();
 
-    int rX, rY, size, x, y;
+    int size;
 
-    int dx, dy, dw, dh;
+    int dw, dh;
 
     boolean visible;
 
     public Chunk(int x, int y, int size, String id)
     {
-        this.rX = x;
-        this.rY = y;
+        super(x, y);
+
         this.size = size;
-
-        this.x = rX * this.size;
-        this.y = rY * this.size;
-
         this.id = id;
+
+        updateRelative();
     }
 
     public void addNode(Node n)
@@ -44,6 +42,16 @@ public class Chunk{
         n.belongsTo(null);
     }
 
+    //draw the under lying node
+    @Override
+    public void draw(Graphics g, int x, int y) {
+        this.dx = x;
+        this.dy = y;
+
+        g.drawOval(dx - this.rad, dy - this.rad, this.diam, this.diam);
+    }
+
+    //draw the chunk
     public void draw(Graphics g, int x, int y, int w, int h)
     {
         this.dx = x;
@@ -61,28 +69,13 @@ public class Chunk{
 
     public boolean isInsideChunk(Node n)
     {
-        boolean left = n.getX() >= this.x;
-        boolean upper = n.getY() >= this.y;
+        boolean left = n.getX() >= this.rX;
+        boolean upper = n.getY() >= this.rY;
 
-        boolean right = n.getX() < this.x + this.size;
-        boolean lower = n.getY() < this.y + this.size;
+        boolean right = n.getX() < this.rX + this.size;
+        boolean lower = n.getY() < this.rY + this.size;
 
         return left && right && upper && lower;
-    }
-
-    public int getRelativeX() {
-        return rX;
-    }
-    public int getRelativeX(int off) {
-        return getRelativeX() + off;
-    }
-
-
-    public int getRelativeY() {
-        return rY;
-    }
-    public int getRelativeY(int off) {
-        return getRelativeY() + off;
     }
 
     public int getSize() {
@@ -102,19 +95,29 @@ public class Chunk{
         return visible;
     }
 
-    public int getDrawX() {
-        return dx;
-    }
-
-    public int getDrawY() {
-        return dy;
-    }
-
     public String getID() {
         return id;
     }
     public boolean isId(String s)
     {
         return s.equals(id);
+    }
+
+    @Override
+    protected void updateRelative() {
+        //slightly different relative calculation for chunks
+        this.rX = (int)this.x * this.size;
+        this.rY = (int)this.y * this.size;
+    }
+
+    @Override
+    public void move(double x, double y) {
+        //chunks dont move
+    }
+
+    @Override
+    public Chunk getBelongsTo() {
+        //doesn't belong to any other node, ie itself
+        return this;
     }
 }

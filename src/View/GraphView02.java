@@ -43,10 +43,9 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
         ArrayList<Chunk> loadedChunks = controller.getLoadedChunks();
         for (Chunk c: loadedChunks)
         {
-            double size = c.getSize();
-
-            double[] point = controller.transform(c.getRelativeX() * size, c.getRelativeY() * size);
-            double[] dim = controller.transform(c.getRelativeX(1) * size, c.getRelativeY(1) * size);
+            int size = c.getSize();
+            double[] point = controller.transform(c.getRelativeX(), c.getRelativeY());
+            double[] dim = controller.transform(c.getRelativeX(size), c.getRelativeY(size));
 
             int x = (int)(point[0]*w);
             int y = (int)(point[1]*h);

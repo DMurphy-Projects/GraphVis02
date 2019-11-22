@@ -4,7 +4,6 @@ import Controller.ForceController;
 import Controller.Routines.RelationshipRoutine;
 import Model.Force.SpringForce;
 import Model.Graph.*;
-import View.GraphView;
 import View.GraphView02;
 import View.GraphViewController;
 

@@ -6,10 +6,10 @@ import java.awt.*;
 
 public class ViewNode extends Node {
 
-    int dx, dy;
-    float rX, rY;
+    protected int dx, dy;
+    protected float rX, rY;
 
-    int diam = 2, rad;
+    protected int diam = 2, rad;
 
     public ViewNode(int x, int y)
     {
@@ -32,7 +32,7 @@ public class ViewNode extends Node {
         updateRelative();
     }
 
-    private void updateRelative()
+    protected void updateRelative()
     {
         if (belongsTo != null) {
             int size = belongsTo.getSize();
@@ -61,9 +61,15 @@ public class ViewNode extends Node {
     public float getRelativeX() {
         return rX;
     }
+    public float getRelativeX(float x) {
+        return rX + x;
+    }
 
     public float getRelativeY() {
         return rY;
+    }
+    public float getRelativeY(float y) {
+        return rY + y;
     }
 
     public int getDrawX() {
