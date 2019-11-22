@@ -5,12 +5,14 @@ import Model.ChunkTranslate;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 public class Graph {
 
     ArrayList<Relationship> relationships = new ArrayList<>();
 
-    ArrayList<Chunk> chunks;
+    HashMap<String, Chunk> chunks;
     int chunkSize;
 
     ChunkTranslate translate;
@@ -19,7 +21,7 @@ public class Graph {
 
     public Graph(int width, int height, int chunkSize)
     {
-        chunks = new ArrayList<>();
+        chunks = new HashMap<>();
         this.chunkSize = chunkSize;
         this.width = width;
         this.height = height;
@@ -53,7 +55,8 @@ public class Graph {
             for (int ii=0;ii<height;ii++)
             {
                 Point pos = translate.translate(i*chunkSize, ii*chunkSize);
-                chunks.add(new Chunk(i, ii, chunkSize, pos.x+":"+pos.y));
+                String id = pos.x+":"+pos.y;
+                chunks.put(id, new Chunk(i, ii, chunkSize, id));
             }
         }
     }
@@ -63,23 +66,16 @@ public class Graph {
         Point pos = translate.translate(n.getX(), n.getY());
         String posId = pos.x+":"+pos.y;
 
-        boolean found = false;
-        for (Chunk c: chunks)
+        if (chunks.containsKey(posId))
         {
-            if (c.isId(posId))
-            {
-                found = true;
-
-                c.addNode(n);
-            }
+            chunks.get(posId).addNode(n);
         }
-
-        if (!found)
+        else
         {
             System.out.println("Adding Chunk");
 
             Chunk newChunk = new Chunk(pos.x, pos.y, chunkSize, posId);
-            chunks.add(newChunk);
+            chunks.put(posId, newChunk);
 
             newChunk.addNode(n);
         }
@@ -104,8 +100,8 @@ public class Graph {
         }
     }
 
-    public ArrayList<Chunk> getAllChunks() {
-        return chunks;
+    public Collection<Chunk> getAllChunks() {
+        return chunks.values();
     }
 
     public ArrayList<Relationship> getAllRelationships() {
