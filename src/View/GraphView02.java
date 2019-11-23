@@ -52,7 +52,9 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
             int _w = (int)(dim[0]*w) - x;
             int _h = (int)(dim[1]*h) - y;
 
+            g.setColor(Color.gray.brighter());
             c.draw(g, x, y, _w, _h);
+            g.setColor(Color.black);
 
             for (Node _n : c.getNodes()) {
 
