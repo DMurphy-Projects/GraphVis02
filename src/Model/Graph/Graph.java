@@ -49,10 +49,13 @@ public class Graph {
             }
         };
         translate.setup(0, 0, chunkSize, chunkSize);
+
+        int w = width/2;
+        int h = height/2;
         //init chunks
-        for (int i=0;i<width;i++)
+        for (int i=-w;i<width-w;i++)
         {
-            for (int ii=0;ii<height;ii++)
+            for (int ii=-h;ii<height-h;ii++)
             {
                 Point pos = translate.translate(i*chunkSize, ii*chunkSize);
                 String id = pos.x+":"+pos.y;
