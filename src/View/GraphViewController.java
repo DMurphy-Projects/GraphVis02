@@ -6,8 +6,7 @@ import Model.Graph.Node;
 import Model.Graph.Relationship;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 //is this just a controller at this point? not only used for view
 public class GraphViewController {
@@ -64,6 +63,8 @@ public class GraphViewController {
 
     private void loadFromRelationships()
     {
+        HashMap<String, Boolean> tempMap = new HashMap<>();
+
         for (Relationship r: graph.getAllRelationships()) {
             Node n1 = r.getN1();
             Node n2 = r.getN2();
@@ -77,13 +78,18 @@ public class GraphViewController {
             if (n1Vis && !n2Vis)
             {
                 //need to load n2
-                loadMap.put(c2.getID(), true);
+                tempMap.put(c2.getID(), true);
             }
             else if (!n1Vis && n2Vis)
             {
                 //need to load n1
-                loadMap.put(c1.getID(), true);
+                tempMap.put(c1.getID(), true);
             }
+        }
+
+        for (Map.Entry<String, Boolean> chunkToLoad: tempMap.entrySet())
+        {
+            loadMap.put(chunkToLoad.getKey(), chunkToLoad.getValue());
         }
     }
 
