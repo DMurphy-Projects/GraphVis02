@@ -44,11 +44,12 @@ public class ForceController {
             for (Node _n: c.getNodes())
             {
                 ForceNode n = (ForceNode)_n;
-                double[] vector = n.findResultantForce();
+                ForceNode.ForceInstance inst = n.findResultantForce();
+                double[] vec = inst.getForceVector();
 
 //                System.out.println(Arrays.toString(vector));
 
-                n.move(vector[0], vector[1]);
+                n.move(vec[0], vec[1]);
                 model.updateNode(n);
             }
         }

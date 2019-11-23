@@ -1,17 +1,24 @@
 package Model.Force;
 
-import Helper.DistanceCalc;
 import Model.Graph.ForceNode;
 
 public class SpringForce implements IForce {
 
     int length, length_2;
-    double sqrt2_2 = 2 * Math.sqrt(2);
 
-    public SpringForce(int l)
+    double tightness;
+
+    public SpringForce(int l, double t)
     {
         length = l;
         length_2 = length * length;
+
+        tightness = 1d / t;
+    }
+
+    @Override
+    public void applyForceForFirst(ForceNode n1, ForceNode n2) {
+        System.out.println("Not Implemented\n"+ Thread.currentThread().getStackTrace());
     }
 
     @Override
@@ -33,16 +40,13 @@ public class SpringForce implements IForce {
 
         double distFromOptimal = Math.abs(vLen-this.length);
 
-        //nodes move in pairs, with this force
-        double force = distFromOptimal / 2;
+        double force = distFromOptimal / tightness;
         if (vLen > length)
         {
             //needs to be smaller
 
             n1.addForce(vec, -force);
             n2.addForce(vec, force);
-
-//            System.out.println("Smaller: "+vLen);
         }
         else if (vLen < length)
         {
@@ -50,8 +54,6 @@ public class SpringForce implements IForce {
 
             n1.addForce(vec, force);
             n2.addForce(vec, -force);
-
-//            System.out.println("Bigger: "+vLen);
         }
     }
 }

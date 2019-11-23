@@ -72,8 +72,6 @@ public class Graph {
         }
         else
         {
-            System.out.println("Adding Chunk");
-
             Chunk newChunk = new Chunk(pos.x, pos.y, chunkSize, posId);
             chunks.put(posId, newChunk);
 
@@ -92,8 +90,6 @@ public class Graph {
 
         if (!belongs.isInsideChunk(n))
         {
-            System.out.println("Remove " + belongs.getID());
-
             belongs.removeNode(n);
 
             putNode(n);

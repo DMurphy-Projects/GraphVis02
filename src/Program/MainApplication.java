@@ -1,7 +1,9 @@
 package Program;
 
 import Controller.ForceController;
+import Controller.Routines.ChunkRadiusRoutine;
 import Controller.Routines.RelationshipRoutine;
+import Model.Force.RepelForce;
 import Model.Force.SpringForce;
 import Model.Graph.*;
 import View.GraphView02;
@@ -15,8 +17,8 @@ public class MainApplication {
     public static void main(String[] args) throws InterruptedException {
         Graph graph = new Graph(5, 5, 8);
 
-//        Node n1 = new ForceNode(-1, 1);
-//        Node n2 = new ForceNode(12, 12);
+//        Node n1 = new ForceNode(1, 1);
+//        Node n2 = new ForceNode(2, 2);
 //        Node n3 = new ForceNode(1, 12);
 //
 //        graph.putNode(n1);
@@ -63,7 +65,8 @@ public class MainApplication {
         frame.setVisible(true);
 
         ForceController fCon = new ForceController(viewController, graph);
-        fCon.addRoutine(new RelationshipRoutine(viewController, new SpringForce(2)));
+        fCon.addRoutine(new RelationshipRoutine(viewController, new SpringForce(1, 0.01)));
+        fCon.addRoutine(new ChunkRadiusRoutine(viewController, graph, new RepelForce(2, 0.01), 3));
 
         while (true) {
             viewController.update();
@@ -73,7 +76,7 @@ public class MainApplication {
 
             view.update();
 
-            Thread.sleep(100);
+            Thread.sleep(1);
         }
     }
 }

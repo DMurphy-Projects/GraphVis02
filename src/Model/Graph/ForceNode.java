@@ -19,6 +19,22 @@ public class ForceNode extends ViewNode{
             vector = v;
             force = f;
         }
+
+        public double[] getForceVector()
+        {
+            return new double[]{
+                    vector[0] * force,
+                    vector[1] * force,
+            };
+        }
+
+        public double[] getVector() {
+            return vector;
+        }
+
+        public double getForce() {
+            return force;
+        }
     }
 
     List<ForceInstance> forces = new ArrayList<>();
@@ -29,7 +45,7 @@ public class ForceNode extends ViewNode{
     }
 
     //returns a magnitude vector, perhaps not the correct term, ie not a unit vector
-    public double[] findResultantForce()
+    public ForceInstance findResultantForce()
     {
         double sumX = 0, sumY = 0;
 
@@ -41,8 +57,25 @@ public class ForceNode extends ViewNode{
             sumY += v[1] * f.force;
         }
 
-        forces.clear();
+        double[] newVec = new double[]{sumX, sumY};
 
-        return new double[]{sumX, sumY};
+        if (sumX == 0 && sumY == 0)
+        {
+            return new ForceInstance(newVec, 0);
+        }
+        else
+        {
+            double vLen = Math.sqrt((newVec[0]*newVec[0]) + (newVec[1]*newVec[1]));
+
+            newVec[0] /= vLen;
+            newVec[1] /= vLen;
+
+            forces.clear();
+            //adds a flat amount of decay
+            double decay = 0.1;
+            forces.add(new ForceInstance(newVec, Math.max(vLen - decay, 0)));
+
+            return new ForceInstance(newVec, vLen);
+        }
     }
 }
