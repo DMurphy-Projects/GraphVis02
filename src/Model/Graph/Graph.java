@@ -112,4 +112,9 @@ public class Graph {
     {
         return new Dimension(width * chunkSize, height * chunkSize);
     }
+
+    public Chunk getChunk(String id)
+    {
+        return chunks.get(id);
+    }
 }

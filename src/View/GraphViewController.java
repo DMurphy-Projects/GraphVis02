@@ -164,4 +164,14 @@ public class GraphViewController {
     public ArrayList<Relationship> getLoadedRelationships() {
         return (ArrayList<Relationship>) loadedRelationships.clone();
     }
+
+    public boolean isLoaded(String id)
+    {
+        boolean result = loadMap.containsKey(id);
+        if (result)
+        {
+            result = loadMap.get(id);
+        }
+        return result;
+    }
 }
