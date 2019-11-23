@@ -75,8 +75,6 @@ public class MainApplication {
             fCon.finish();
 
             view.update();
-
-            Thread.sleep(1);
         }
     }
 }

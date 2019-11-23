@@ -158,11 +158,11 @@ public class GraphViewController {
     }
 
     public ArrayList<Chunk> getLoadedChunks() {
-        return (ArrayList<Chunk>) loadedChunks.clone();
+        return new ArrayList<>( loadedChunks);
     }
 
     public ArrayList<Relationship> getLoadedRelationships() {
-        return (ArrayList<Relationship>) loadedRelationships.clone();
+        return new ArrayList<>(loadedRelationships);
     }
 
     public boolean isLoaded(String id)

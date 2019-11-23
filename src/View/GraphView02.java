@@ -9,12 +9,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class GraphView02 extends JPanel implements MouseMotionListener, MouseListener, KeyListener{
 
     GraphViewController controller;
 
     int prevX, prevY;
+
+    boolean lock = false;
 
     public GraphView02(GraphViewController vCon)
     {
@@ -23,7 +26,23 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
     public void update()
     {
+        lock = true;
+
         this.repaint();
+
+        sync();
+    }
+
+    public void sync()
+    {
+        while (lock)
+        {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -33,6 +52,7 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
     @Override
     public void paint(Graphics g) {
+
         g.setColor(Color.white);
         g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -40,7 +60,7 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
         int w = getWidth(), h = getHeight();
 
-        ArrayList<Chunk> loadedChunks = controller.getLoadedChunks();
+        Collection<Chunk> loadedChunks = controller.getLoadedChunks();
         for (Chunk c: loadedChunks)
         {
             int size = c.getSize();
@@ -68,13 +88,16 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
         }
 
         //draw loaded relationships
-        for (Relationship r: controller.getLoadedRelationships())
+        ArrayList<Relationship> loadedRelationships = controller.getLoadedRelationships();
+        for (Relationship r: loadedRelationships)
         {
             ViewNode n1 = (ViewNode) r.getN1();
             ViewNode n2 = (ViewNode) r.getN2();
 
             g.drawLine(n1.getDrawX(), n1.getDrawY(), n2.getDrawX(), n2.getDrawY());
         }
+
+        lock = false;
     }
 
     @Override
@@ -112,8 +135,6 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
         prevX = e.getXOnScreen();
         prevY = e.getYOnScreen();
-
-        update();
     }
 
     @Override
@@ -126,12 +147,10 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
         if (e.getKeyChar() == '=')//where the + is
         {
             controller.zoom(0.75);
-            update();
         }
         else if (e.getKeyChar() == '-')
         {
             controller.zoom(1.33);
-            update();
         }
     }
 
