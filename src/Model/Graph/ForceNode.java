@@ -5,8 +5,16 @@ import java.util.List;
 
 public class ForceNode extends ViewNode{
 
+    double velocity, c;
+    double decay = 0.001;
+
     public ForceNode(int x, int y) {
         super(x, y);
+
+        //larger the value, less explosive
+        c = 1000;
+
+        velocity = 0;
     }
 
     public class ForceInstance
@@ -48,13 +56,15 @@ public class ForceNode extends ViewNode{
     public ForceInstance findResultantForce()
     {
         double sumX = 0, sumY = 0;
+        int total = forces.size();
 
         for (ForceInstance f: forces)
         {
             double[] v = f.vector;
+            double force = f.force / total;
 
-            sumX += v[0] * f.force;
-            sumY += v[1] * f.force;
+            sumX += v[0] * force;
+            sumY += v[1] * force;
         }
 
         double[] newVec = new double[]{sumX, sumY};
@@ -65,6 +75,8 @@ public class ForceNode extends ViewNode{
         }
         else
         {
+            double scale = c / Math.max(c, Math.pow(velocity, 2));
+
             double vLen = Math.sqrt((newVec[0]*newVec[0]) + (newVec[1]*newVec[1]));
 
             newVec[0] /= vLen;
@@ -72,10 +84,11 @@ public class ForceNode extends ViewNode{
 
             forces.clear();
             //adds a flat amount of decay
-            double decay = 0.1;
-            forces.add(new ForceInstance(newVec, Math.max(vLen - decay, 0)));
+            velocity = Math.max(vLen - decay, 0);
 
-            return new ForceInstance(newVec, vLen);
+            forces.add(new ForceInstance(newVec, velocity));
+
+            return new ForceInstance(newVec, velocity*scale);
         }
     }
 }

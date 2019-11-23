@@ -10,7 +10,6 @@ import View.GraphView02;
 import View.GraphViewController;
 
 import javax.swing.*;
-import java.util.ArrayList;
 
 public class MainApplication {
 
@@ -65,8 +64,8 @@ public class MainApplication {
         frame.setVisible(true);
 
         ForceController fCon = new ForceController(viewController, graph);
-        fCon.addRoutine(new RelationshipRoutine(viewController, new SpringForce(1, 0.01)));
-        fCon.addRoutine(new ChunkRadiusRoutine(viewController, graph, new RepelForce(2, 0.01), 3));
+        fCon.addRoutine(new RelationshipRoutine(viewController, new SpringForce(1, 0.1)));
+        fCon.addRoutine(new ChunkRadiusRoutine(viewController, graph, new RepelForce(8, 0.1), 3));
 
         while (true) {
             viewController.update();
