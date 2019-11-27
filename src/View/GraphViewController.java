@@ -152,6 +152,108 @@ public class GraphViewController {
         return new double[]{relX, relY};
     }
 
+    private void addChunk(ArrayList<Chunk> chunks, int x, int y)
+    {
+        String toFind = x + ":" + y;
+        if (isLoaded(toFind))
+        {
+            chunks.add(graph.getChunk(toFind));
+        }
+    }
+
+    private void addNearby(ArrayList<Chunk> chunks, double rX, double rY, int chunkX, int chunkY)
+    {
+        int x = 0, y = 0;
+        if (rX > 0.5)
+        {
+            addChunk(chunks, chunkX+1, chunkY);
+            x = 1;
+        }
+        else
+        {
+            addChunk(chunks, chunkX-1, chunkY);
+            x = -1;
+        }
+        if (rY > 0.5)
+        {
+            addChunk(chunks, chunkX, chunkY+1);
+            y = 1;
+        }
+        else
+        {
+            addChunk(chunks, chunkX, chunkY-1);
+            y = -1;
+        }
+
+        //add the corner
+        addChunk(chunks, chunkX+x, chunkY+y);
+
+    }
+
+    //sx = ((rx + xPos + globalX)/screenSize) * screenWidth
+    //sx / screenWidth = (rx + xPos + globalX)/screenSize
+    //screenSize * (sx / screenWidth) = rx + xPos + globalX
+    //screenSize * (sx / screenWidth) - xPos - globalX = rx
+    public double[] reversePoint(double x, double y, double screenWidth, double screenHeight)
+    {
+        double _x = screenSize * (x / screenWidth) - xPos - globalOffX;
+        double _y = screenSize * (y / screenHeight) - yPos - globalOffY;
+
+        return new double[]{_x, _y};
+    }
+
+    public Node getNodeAtPosition(double _x, double _y)
+    {
+        int chunkSize = graph.getChunkSize();
+
+        double rX = _x % chunkSize;
+        rX /= chunkSize;
+        if (rX < 0) rX += 1;
+
+        double rY = _y % chunkSize;
+        rY /= chunkSize;
+        if (rY < 0) rY += 1;
+
+        int chunkX = (int) Math.floor (_x / chunkSize);
+        int chunkY = (int) Math.floor(_y / chunkSize);
+
+        String chunkToFind = chunkX + ":" + chunkY;
+        Chunk centre = graph.getChunk(chunkToFind);
+
+        //may not exist
+        if (centre != null)
+        {
+            double dist = Integer.MAX_VALUE;
+            Node nearest = null;
+
+            ArrayList<Chunk> toCheck = new ArrayList<>();
+            addNearby(toCheck, rX, rY, chunkX, chunkY);
+
+            toCheck.add(centre);
+
+            //find nearest node
+            for (Chunk chunk: toCheck) {
+                for (Node n : chunk.getNodes()) {
+                    double[] v = new double[]{
+                            n.getX() - _x,
+                            n.getY() - _y
+                    };
+                    double d = (v[0] * v[0]) + (v[1] * v[1]);
+
+                    if (d < dist) {
+                        dist = d;
+                        nearest = n;
+                    }
+                }
+
+                if (nearest != null) {
+                    return nearest;
+                }
+            }
+        }
+        return null;
+    }
+
     public void move(double x, double y)
     {
         xPos += x * screenSize;

@@ -1,6 +1,7 @@
 package View;
 
 import Model.Chunk;
+import Model.Graph.ForceNode;
 import Model.Graph.Node;
 import Model.Graph.Relationship;
 import Model.Graph.ViewNode;
@@ -18,6 +19,8 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
     int prevX, prevY;
 
     boolean lock = false;
+
+    ForceNode grabbed = null;
 
     public GraphView02(GraphViewController vCon)
     {
@@ -102,18 +105,42 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
     @Override
     public void mouseClicked(MouseEvent e) {
+    }
 
+    private void grabANode(double x, double y)
+    {
+        ForceNode n = (ForceNode) controller.getNodeAtPosition(x, y);
+        grabbed = n;
+    }
+
+    private boolean tickGrabbedNode(double x, double y)
+    {
+        if (grabbed != null)
+        {
+            double[] v = new double[]{
+                    x - grabbed.getX(),
+                    y - grabbed.getY()
+            };
+
+            grabbed.addForce(v, 0.1);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         prevX = e.getXOnScreen();
         prevY = e.getYOnScreen();
+
+        double[] p = controller.reversePoint(e.getX(), e.getY(), getWidth(), getHeight());
+        grabANode(p[0], p[1]);
+        tickGrabbedNode(p[0], p[1]);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        grabbed = null;
     }
 
     @Override
@@ -128,13 +155,20 @@ public class GraphView02 extends JPanel implements MouseMotionListener, MouseLis
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        double xOff = e.getXOnScreen() - prevX;
-        double yOff = e.getYOnScreen() - prevY;
+        if (grabbed != null) {
+            double[] p = controller.reversePoint(e.getX(), e.getY(), getWidth(), getHeight());
+            tickGrabbedNode(p[0], p[1]);
+        }
+        else
+        {
+            double xOff = e.getXOnScreen() - prevX;
+            double yOff = e.getYOnScreen() - prevY;
 
-        controller.move(xOff / getWidth(), yOff / getHeight());
+            controller.move(xOff / getWidth(), yOff / getHeight());
 
-        prevX = e.getXOnScreen();
-        prevY = e.getYOnScreen();
+            prevX = e.getXOnScreen();
+            prevY = e.getYOnScreen();
+        }
     }
 
     @Override
