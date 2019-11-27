@@ -57,8 +57,8 @@ public class MainApplication {
         frame.add(view);
         frame.pack();
 
-        frame.addMouseListener(view);
-        frame.addMouseMotionListener(view);
+        view.addMouseListener(view);
+        view.addMouseMotionListener(view);
         frame.addKeyListener(view);
 
         frame.setVisible(true);
