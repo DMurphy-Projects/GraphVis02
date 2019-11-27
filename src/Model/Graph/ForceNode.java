@@ -58,7 +58,7 @@ public class ForceNode extends ViewNode{
         double sumX = 0, sumY = 0;
         int total = forces.size();
 
-        for (ForceInstance f: forces)
+        for (ForceInstance f: new ArrayList<>(forces))
         {
             double[] v = f.vector;
             double force = f.force / total;
