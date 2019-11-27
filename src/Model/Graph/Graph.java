@@ -114,6 +114,15 @@ public class Graph {
 
     public Chunk getChunk(String id)
     {
-        return chunks.get(id);
+        boolean exists = chunks.containsKey(id);
+        if (exists)
+        {
+            return chunks.get(id);
+        }
+        return null;
+    }
+
+    public int getChunkSize() {
+        return chunkSize;
     }
 }
